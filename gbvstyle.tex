@@ -1,0 +1,148 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% GBV/VZG Style für A4-Dokumente
+% Anpassungen zum Pandoc-Standard-Stylesheet
+% 
+% -V documentclass=scrreprt --include-in-header=gbvstyle.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Benötigte Packages
+\usepackage{tikz}
+\usepackage{scrpage2}
+\usepackage{lastpage}
+
+% GBV-Farbe (Blau)
+\definecolor{GBV}{RGB}{89,124,199}
+
+% TODO: VZG Logo
+% \pgfdeclareimage[height=10mm]{VZGLogo}{VZGLogo.eps}
+
+% Seitenlayout
+\KOMAoptions{twoside}
+\usepackage[a4paper,margin=2.5cm,bottom=2.5cm,top=2.5cm]{geometry}
+
+% Serifenlose Schrift
+\renewcommand{\familydefault}{\sfdefault}
+
+% TODO: Schriftart Calibiri verwenden
+
+\makeatletter
+
+% Kapitelüberschriften
+\renewcommand*\chapterheadstartvskip{\vspace*{-\topskip}}
+\renewcommand*{\chapterheadendvskip}{\vspace*{0.5ex}}
+\renewcommand*{\chapterpagestyle}{scrheadings}
+
+% Abstand vor und nach Überschriften (siehee http://www.komascript.de/node/1299):
+% Achtung: Definition hängt möglicherweise von KomaScript version ab!
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {0.75ex \@plus 0.25ex \@minus .25ex}%
+  {0.5ex \@plus 0.125ex \@minus .125ex}%
+  {%\ifnum \scr@compatibility>\@nameuse{scr@v@2.96}\relax
+    %\setlength{\parfillskip}{\z@ plus 1fil}\fi%
+    \raggedsection\normalfont\sectfont\nobreak\size@section}%
+}
+% TODO: \abovecaptionskip and \belowcaptionskip für Bilder
+
+\setkomafont{chapter}{\fontsize{16bp}{14bp}\selectfont} 
+\setkomafont{section}{\fontsize{14bp}{12bp}\selectfont} 
+
+\addtokomafont{sectioning}{\color{GBV}} % chapter, section...
+\addtokomafont{caption}{\color{GBV}}
+\addtokomafont{captionlabel}{\color{GBV}}
+\addtokomafont{chapterentry}{\color{GBV}}
+\addtokomafont{chapterentrypagenumber}{\color{GBV}}
+
+\tikzset{page position/.style={remember picture,overlay,shift={(#1)}}}
+
+% Kopf- und Fußzeile
+\pagestyle{scrheadings}
+\clearscrheadfoot
+
+\lohead{% Kopfzeile linke Seite
+  \tikz[page position=current page.north west]
+  \draw [fill,GBV] (0mm,-6.4mm) rectangle +(\paperwidth,-11mm);
+  \tikz[page position=current page.north west]
+  \node [anchor=west,text=white] at (25mm,-11.9mm) { \upshape\textsf{\@date} };
+}
+\rehead{% Kopfzeile rechte Seite
+  \tikz[page position=current page.north west]
+  \draw [fill,GBV] (0mm,-6.4mm) rectangle +(\paperwidth,-11mm);
+  \tikz[page position=current page.north east]
+  \node [anchor=east,text=white] at (-25mm,-11.9mm) { \upshape\textsf{\@title} };
+}
+
+% Seitenzahlen in Weiß
+\renewcommand{\pnumfont}{\color{white}\upshape}
+
+\cfoot{% Fußzeile: Linie
+  \tikz[page position=current page.south west]
+  \draw[draw=GBV,line width=0.5pt] (0,1cm) to +(\paperwidth,0);
+}
+\refoot{% Fußzeile: Seitezahl links
+  \tikz[page position=current page.south west]
+  \node[anchor=south west,fill=GBV,minimum height=0.25cm] at (2.5cm,1cm) {\pagemark};
+}
+\lofoot{% Fußzeile: Seitezahl rechts
+  \tikz[page position=current page.south east]
+  \node[anchor=south east,fill=GBV,minimum height=0.25cm] at (-2.5cm,1cm) {\pagemark};
+}
+
+% Inhaltsverzeichnis
+%\usepackage{setspace} 
+%\onehalfspacing 
+%\BeforeStartingTOC[toc]{\singlespacing}
+
+\let\oldtoc\tableofcontents
+\renewcommand*\tableofcontents{}
+
+% Titelseite
+%\newcommand\toconpage{\tableofcontents}
+
+\renewcommand{\maketitle}{
+  \begin{titlepage}
+    % Linie oben
+    \tikz[page position=current page.north west]
+    \draw [fill,GBV] (0mm,-6.4mm) rectangle +(\paperwidth,-11mm);
+    % Linie unten
+    \tikz[page position=current page.south west]
+    \draw[draw=GBV,line width=0.5pt] (0,1cm) to +(\paperwidth,0);
+
+    \begin{flushright}
+      \color{GBV} \bfseries
+
+      {\Huge\@title} \\
+
+      \vspace{5mm}
+
+      \Large \@date % TODO: version
+       \\ 
+        \vspace{5mm}
+        \@author
+    \end{flushright}
+
+    % Put ToC on the cover
+    \hypersetup{linkcolor=black}
+    \vfill
+    \setcounter{tocdepth}{3}
+
+    \begingroup
+    \let\clearpage\relax
+    \oldtoc
+    \endgroup
+
+    \vfill
+
+  \end{titlepage}
+}
+
+% Schönere verbatim-Umgebung
+\usepackage{fancyvrb}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{%
+    frame=leftline,rulecolor=\color{lightgray},
+    framerule=0.5pt,xleftmargin=1em,framesep=1em}
+
+% Link-Farben
+\definecolor{GBVDark}{RGB}{0,51,153}
+\hypersetup{citecolor=GBVDark,urlcolor=GBVDark,linkcolor=GBVDark}
+
+\makeatother
