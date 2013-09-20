@@ -1,1 +1,2 @@
-TEX_VARS = -V documentclass=scrreprt --include-in-header=gbvstyle.tex
+TEX_VARS = -V documentclass=scrreprt --include-in-header=$(MAKESPEC)/gbvstyle.tex
+DATE += "\(version $(VERSION)\)"
