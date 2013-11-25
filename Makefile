@@ -36,9 +36,16 @@ ifneq ($(LANGUAGE),)
 	VARS += -V lang=$(LANGUAGE)
 endif
 
+ifneq ($(findstring owl,$(FORMATS)),)
+	VARS += -V RDFXML_URL=$(NAME).owl
+endif
+
 ########################################################################
 
 COMBINED = $(NAME).tmp
+
+RESULTFILES  = $(NAME).html
+RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
 
 RESULTFILES  = $(NAME).html
 RESULTFILES += $(foreach f,$(FORMATS),$(NAME).$(f))
@@ -77,6 +84,7 @@ info: status
 			echo "$$f"; \
 		done \
 	fi
+	@echo VARS='$(VARS)'
 
 sources: Makefile $(MAKESPEC) $(SOURCE) $(REFERENCES)
 
@@ -107,12 +115,19 @@ endif
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
 		ABSTRACT '$(ABSTRACT)' \
 		VERSION '$(VERSION)' \
+		GITHUB '$(GITHUB)' \
 		GIT_CHANGES: changes.tmp \
 		< $(SOURCE) | $(MAKESPEC)/include.pl >> $@
 	@rm -f changes.tmp
 
+# TODO: More variables (?)
 $(NAME).tmp.ttl: sources
 	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) > $@
+	@$(MAKESPEC)/CodeBlocks $(TTLFORMAT) $(SOURCE) | \
+		$(MAKESPEC)/replace-vars.pl \
+			GIT_REVISION_DATE '$(REVDATE)' \
+	        VERSION '$(VERSION)' \
+	    > $@
 
 $(NAME).ttl: $(NAME).tmp.ttl
 	@$(RAPPER) --guess $< -o turtle > $@
@@ -129,7 +144,7 @@ website: sources clean purge revision $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
 	@rm *.tmp
-	@$(GIT) checkout gh-pages || $(GIT) checkout --orphan gh-pages
+	@$(GIT) checkout gh-pages || ( $(GIT) checkout --orphan gh-pages && git rm -rf . )
 	@for f in html $(FORMATS); do \
 		cp $(NAME)-$(REVSHRT).$$f $(NAME).$$f ; \
 	done
