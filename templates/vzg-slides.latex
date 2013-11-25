@@ -68,7 +68,7 @@ $endif$
 \setbeamercolor{structure}{fg=VZGBlau}
 \usebackgroundtemplate{
 \includegraphics[width=\paperwidth,
-height=\paperheight]{gbv-slide-background.png}
+height=\paperheight]{vzg-slide-background.png}
 }
 
 % Comment these out if you don't want a slide with just the
