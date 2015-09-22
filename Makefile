@@ -112,6 +112,8 @@ endif
 	@$(MAKESPEC)/replace-vars.pl \
 		GIT_REVISION_DATE '$(REVDATE)' \
 		GIT_ATOM_FEED	  '$(GIT_ATOM_FEED)' \
+		CURRENT_VERSION   '$(NAME)-$(REVSHRT)' \
+		CURRENT_TIMESTAMP '$(REVTIME)' \
 		GIT_REVISION_HASH '[${REVSHRT}](${REVLINK})' \
 		ABSTRACT '$(ABSTRACT)' \
 		VERSION '$(VERSION)' \
@@ -143,7 +145,7 @@ revision: $(RESULTFILES)
 website: sources clean purge revision $(RESULTFILES)
 	@echo "new revision to be shown at $(GITHUB)"
 	@rm $(RESULTFILES)
-	@rm *.tmp
+	@rm -f *.tmp *.tmp.ttl
 	@$(GIT) checkout gh-pages || ( $(GIT) checkout --orphan gh-pages && git rm -rf . )
 	@for f in html $(FORMATS); do \
 		cp $(NAME)-$(REVSHRT).$$f $(NAME).$$f ; \
