@@ -10,8 +10,16 @@
 \usepackage{scrpage2}
 \usepackage{lastpage}
 
+% siltent error message (FIXME)
+% http://tex.stackexchange.com/questions/165929/semiverbatim-with-tikz-in-beamer
+\makeatletter
+\global\let\tikz@ensure@dollar@catcode=\relax
+\makeatother
+
+
 % GBV-Farbe (Blau)
 \definecolor{GBV}{RGB}{89,124,199}
+\definecolor{GBVDark}{RGB}{0,51,153}
 
 % TODO: VZG Logo
 % \pgfdeclareimage[height=10mm]{VZGLogo}{VZGLogo.eps}
@@ -97,6 +105,8 @@
 
 % Titelseite
 %\newcommand\toconpage{\tableofcontents}
+\renewcommand{\contentsname}{Overview}
+
 
 \renewcommand{\maketitle}{
     % Linie oben
@@ -127,6 +137,7 @@
     \begingroup
     \let\clearpage\relax
     \oldtoc
+    %\makeatletter\@starttoc{toc}\makeatother % no heading
     \endgroup
 
     \vfill
@@ -139,7 +150,6 @@
     framerule=0.5pt,xleftmargin=1em,framesep=1em}
 
 % Link-Farben
-\definecolor{GBVDark}{RGB}{0,51,153}
 \hypersetup{citecolor=GBVDark,urlcolor=GBVDark,linkcolor=GBVDark}
 
 \makeatother
