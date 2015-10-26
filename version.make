@@ -9,17 +9,18 @@ GIT_WITH_REPO  = $(if $(HAS_REPOSITORY),$(GIT),$(error "Not a git repository - c
 ifndef VERSION
  
 	# get latest version tag (possibly empty) or exit if no git repository
-	VERSION := $(shell $(GIT_WITH_REPO) describe --abbrev=0 --tags 2>/dev/null | sed '/^[^v][0-9]/d; s/^v//' | head -1)
+	VERSION_TAG := $(shell $(GIT_WITH_REPO) describe --abbrev=0 --tags 2>/dev/null | grep '^v\?[0-9]' | head -1)
+	VERSION := $(shell echo $(VERSION_TAG) | sed 's/^v//')
 
 	ifneq ($(REVHASH),)
-		VERSION_HASH = $(if $(VERSION),$(shell $(GIT) rev-list v${VERSION} | head -1))
+		VERSION_HASH = $(if $(VERSION),$(shell $(GIT) rev-list ${VERSION_TAG} | head -1))
 		FILES_CHANGED = $(shell $(GIT) status --porcelain 2>/dev/null | sed '/^??/d' )
 
 		ifneq ($(VERSION_HASH),$(REVHASH))
 			ifeq ($(VERSION_HASH),)
 				COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list --all | wc -l)
 			else
-				COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list v$(VERSION).. | wc -l)
+				COMMITS_SINCE_VERSION=$(shell $(GIT) rev-list $(VERSION_TAG).. | wc -l)
 			endif
 			ifneq ($(FILES_CHANGED),)
 				VERSION := $(VERSION)+$(COMMITS_SINCE_VERSION)-dirty
